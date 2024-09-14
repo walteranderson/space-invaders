@@ -20,8 +20,8 @@ window.addEventListener('keyup', (event) => {
 
 export function createGame(canvas, ctx) {
 	const entities = [
-		createShipGrid(ctx),
-		createPlayer(ctx)
+		createShipGrid(),
+		createPlayer()
 	];
 
 	return {
@@ -33,13 +33,13 @@ export function createGame(canvas, ctx) {
 		draw() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			for (let i = 0; i < entities.length; i++) {
-				entities[i].draw();
+				entities[i].draw(ctx);
 			}
 		},
 	}
 }
 
-function createPlayer(ctx) {
+function createPlayer() {
 	let x = 10;
 	let y = CANVAS_HEIGHT - 40;
 	let size = 20;
@@ -50,7 +50,6 @@ function createPlayer(ctx) {
 		if (shooting) return;
 		bullets.push(
 			createBullet(
-				ctx,
 				x + size / 3.25,
 				y - size / 2.5,
 				-1
@@ -83,16 +82,16 @@ function createPlayer(ctx) {
 				}
 			}
 		},
-		draw() {
+		draw(ctx) {
 			ctx.fillRect(x, y, size, size);
 			bullets.forEach((bullet) => {
-				bullet.draw();
+				bullet.draw(ctx);
 			});
 		}
 	}
 }
 
-function createBullet(ctx, _x, _y, direction) {
+function createBullet(_x, _y, direction) {
 	let x = _x;
 	let y = _y;
 	let size = 8;
@@ -104,16 +103,14 @@ function createBullet(ctx, _x, _y, direction) {
 				return true;
 			}
 			y = y + 5 * direction;
-			console.log('bullet.update', { x, y, direction });
 		},
-		draw() {
+		draw(ctx) {
 			ctx.fillRect(x, y, size, size);
-			console.log('bullet.draw', { x, y });
 		}
 	}
 }
 
-function createShipGrid(ctx) {
+function createShipGrid() {
 	let _speed = 0.6;
 	let _direction = 1;
 	let _size = 40;
@@ -176,7 +173,7 @@ function createShipGrid(ctx) {
 				}
 			});
 		},
-		draw() {
+		draw(ctx) {
 			forEachShip(ship => {
 				ctx.fillRect(ship.x, ship.y, _size, _size);
 			});
