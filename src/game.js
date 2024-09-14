@@ -19,18 +19,22 @@ window.addEventListener('keyup', (event) => {
 });
 
 export function createGame(canvas, ctx) {
-	const grid = createShipGrid(ctx);
-	const player = createPlayer(ctx);
+	const entities = [
+		createShipGrid(ctx),
+		createPlayer(ctx)
+	];
+
 	return {
 		update(diff) {
-			const tick = Math.round((diff / 40) * 100) / 100;
-			grid.update(tick)
-			player.update(tick);
+			for (let i = 0; i < entities.length; i++) {
+				entities[i].update(diff);
+			}
 		},
 		draw() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			grid.draw();
-			player.draw();
+			for (let i = 0; i < entities.length; i++) {
+				entities[i].draw();
+			}
 		},
 	}
 }
@@ -40,8 +44,22 @@ function createPlayer(ctx) {
 	let y = CANVAS_HEIGHT - 40;
 	let size = 20;
 
+	let bullets = [];
+	let shooting = false;
+	function shoot() {
+		if (shooting) return;
+		bullets.push(
+			createBullet(
+				ctx,
+				x + size / 3.25,
+				y - size / 2.5,
+				-1
+			)
+		);
+	}
+
 	return {
-		update(tick) {
+		update() {
 			const speed = 3;
 			if (KeysPressed['ArrowRight']) {
 				x += speed;
@@ -50,17 +68,53 @@ function createPlayer(ctx) {
 				x -= speed;
 			}
 			if (KeysPressed[' ']) {
-				console.log('space');
+				shoot();
+				shooting = true;
+			} else {
+				shooting = false;
+			}
+
+			if (bullets.length > 0) {
+				for (let i = bullets.length-1; i >= 0; i--) {
+					const bullet = bullets[i];
+					if (bullet.update()) {
+						bullets.splice(i, 1);
+					}
+				}
 			}
 		},
 		draw() {
 			ctx.fillRect(x, y, size, size);
+			bullets.forEach((bullet) => {
+				bullet.draw();
+			});
+		}
+	}
+}
+
+function createBullet(ctx, _x, _y, direction) {
+	let x = _x;
+	let y = _y;
+	let size = 8;
+	const limit = direction < 0 ? 0 : CANVAS_HEIGHT;
+
+	return {
+		update() {
+			if (y < limit) {
+				return true;
+			}
+			y = y + 5 * direction;
+			console.log('bullet.update', { x, y, direction });
+		},
+		draw() {
+			ctx.fillRect(x, y, size, size);
+			console.log('bullet.draw', { x, y });
 		}
 	}
 }
 
 function createShipGrid(ctx) {
-	let _speed = 0;
+	let _speed = 0.6;
 	let _direction = 1;
 	let _size = 40;
 
@@ -111,12 +165,12 @@ function createShipGrid(ctx) {
 	}
 
 	return {
-		update(tick) {
+		update(diff) {
 			if (checkEnd()) return true;
 			const shouldAdvance = advance();
 
 			forEachShip(ship => {
-				ship.x += (tick + _speed) * _direction;
+				ship.x += _speed * _direction;
 				if (shouldAdvance) {
 					ship.y += ADVANCE_Y_INTERVAL;
 				}
