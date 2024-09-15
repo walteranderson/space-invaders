@@ -1,0 +1,33 @@
+name: Deploy to Surge
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubunbtu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build
+        run: pnpm build
+      - name: Deploy
+        uses: mahmoudgalalz/surge-action@v0.1.5
+        with:
+          domain: 'heavenly-jellyfish.surge.sh'
+          path: './dist'
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
