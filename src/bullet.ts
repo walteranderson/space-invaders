@@ -1,6 +1,6 @@
 import { CANVAS_HEIGHT } from "./constants";
 import { events } from "./events";
-import { GameEntity, GameEntityUpdateParams } from "./game";
+import { GameEntity, GameEntityUpdateParams } from "./game-entity";
 
 export class Bullet implements GameEntity {
   x: number;

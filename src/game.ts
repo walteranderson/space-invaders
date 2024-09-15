@@ -1,17 +1,8 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
 import { events } from "./events";
+import { GameEntity } from "./game-entity";
 import { KeyListener } from "./key-listener";
 import { Player } from "./player";
-
-export type GameEntityUpdateParams = {
-  diff: number;
-  keys: KeyListener;
-};
-
-export interface GameEntity {
-  update(params: GameEntityUpdateParams): void;
-  draw(ctx: CanvasRenderingContext2D): void;
-}
 
 export class Game {
   private ctx: CanvasRenderingContext2D;

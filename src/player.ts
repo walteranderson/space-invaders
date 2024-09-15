@@ -1,6 +1,6 @@
 import { Bullet } from "./bullet";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
-import { GameEntity, GameEntityUpdateParams } from "./game";
+import { GameEntity, GameEntityUpdateParams } from "./game-entity";
 import { events } from "./events";
 
 export class Player implements GameEntity {
