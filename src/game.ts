@@ -19,17 +19,9 @@ export class Game {
   private lastRendered: number;
 
   constructor() {
-    const canvas = document.querySelector<HTMLCanvasElement>("#game");
-    if (!canvas) throw new Error("canvas not found");
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("error getting canvas");
-    this.ctx = ctx;
-    this.ctx.font = "32px sans-serif";
-    this.ctx.fillStyle = "white";
-    this.ctx.strokeStyle = "white";
-
-    this.entities = [new Player()];
+    this.ctx = this.initCtx();
     this.keyListener = new KeyListener();
+    this.entities = [new Player()];
   }
 
   start() {
@@ -61,5 +53,19 @@ export class Game {
     this.update(now - this.lastRendered);
     this.lastRendered = now;
     window.requestAnimationFrame(this.loop.bind(this));
+  }
+
+  private initCtx(): CanvasRenderingContext2D {
+    const canvas = document.querySelector<HTMLCanvasElement>("#game");
+    if (!canvas) throw new Error("ERROR: canvas not found");
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("ERROR: could not get context");
+
+    ctx.font = "32px sans-serif";
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "white";
+
+    return ctx;
   }
 }
