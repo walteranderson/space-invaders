@@ -35,7 +35,6 @@ export class Game {
 
   draw() {
     this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    console.log(this.entities);
 
     let i = this.entities.length;
     while (i--) {
