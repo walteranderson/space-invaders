@@ -1,4 +1,5 @@
 import { CANVAS_HEIGHT } from "./constants";
+import { events } from "./events";
 import { GameEntity, GameEntityUpdateParams } from "./game";
 
 export class Bullet implements GameEntity {
@@ -20,10 +21,12 @@ export class Bullet implements GameEntity {
 
   update(_: GameEntityUpdateParams): void {
     if (this.y < this.limit) {
-      // TODO remove the bullet
+      events.emit("remove_entity", this);
+      return;
     }
     this.y = this.y + this.speed * this.direction;
   }
+
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillRect(this.x, this.y, this.size, this.size);
   }

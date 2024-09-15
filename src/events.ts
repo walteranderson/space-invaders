@@ -23,3 +23,5 @@ export class EventEmitter {
     (this.events[name] || []).forEach((fn) => fn(...args));
   }
 }
+
+export const events = new EventEmitter();
