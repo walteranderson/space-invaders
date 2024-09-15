@@ -20,7 +20,7 @@ export class Bullet implements GameEntity {
   }
 
   update(_: GameEntityUpdateParams): void {
-    if (this.y < this.limit) {
+    if (this.atLimit()) {
       events.emit("remove_entity", this);
       return;
     }
@@ -29,5 +29,13 @@ export class Bullet implements GameEntity {
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillRect(this.x, this.y, this.size, this.size);
+  }
+
+  atLimit() {
+    if (this.direction > 0) {
+      return this.y > this.limit;
+    } else {
+      return this.y < this.limit;
+    }
   }
 }
