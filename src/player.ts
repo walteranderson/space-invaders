@@ -1,4 +1,6 @@
+import { Bullet } from "./bullet";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
+import { EventEmitter } from "./events";
 import { GameEntity, GameEntityUpdateParams } from "./game";
 
 export class Player implements GameEntity {
@@ -7,13 +9,15 @@ export class Player implements GameEntity {
   size: number;
   speed: number;
   shooting: boolean;
+  private events: EventEmitter;
 
-  constructor() {
+  constructor(events: EventEmitter) {
     this.x = 10;
     this.y = CANVAS_HEIGHT - 40;
     this.size = 20;
     this.speed = 3;
     this.shooting = false;
+    this.events = events;
   }
 
   update({ keys }: GameEntityUpdateParams) {
@@ -26,10 +30,12 @@ export class Player implements GameEntity {
     }
 
     if (keys.pressed(" ")) {
-      this.shoot();
-      this.shooting = true;
+      if (!this.shooting) {
+        this.shoot();
+        this.shooting = true;
+      }
     } else {
-      this.shooting = true;
+      this.shooting = false;
     }
   }
 
@@ -53,5 +59,14 @@ export class Player implements GameEntity {
     }
   }
 
-  private shoot() {}
+  private shoot() {
+    this.events.emit(
+      "add_entity",
+      new Bullet({
+        x: this.x + this.size / 3.25,
+        y: this.y - this.size / 2.5,
+        direction: -1,
+      }),
+    );
+  }
 }

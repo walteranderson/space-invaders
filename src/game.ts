@@ -1,4 +1,5 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
+import { EventEmitter } from "./events";
 import { KeyListener } from "./key-listener";
 import { Player } from "./player";
 
@@ -17,11 +18,13 @@ export class Game {
   private entities: GameEntity[] = [];
   private keyListener: KeyListener;
   private lastRendered: number;
+  private events: EventEmitter;
 
   constructor() {
     this.ctx = this.initCtx();
+    this.events = this.initEvents();
     this.keyListener = new KeyListener();
-    this.entities = [new Player()];
+    this.entities = [new Player(this.events)];
   }
 
   start() {
@@ -67,5 +70,15 @@ export class Game {
     ctx.strokeStyle = "white";
 
     return ctx;
+  }
+
+  private initEvents() {
+    const events = new EventEmitter();
+
+    events.subscribe("add_entity", (e: GameEntity) => {
+      this.entities.push(e);
+    });
+
+    return events;
   }
 }
