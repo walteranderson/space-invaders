@@ -2,7 +2,6 @@ export const CANVAS_WIDTH = 800;
 export const CANVAS_HEIGHT = 800;
 
 export const ADVANCE_Y_INTERVAL = 30;
-export const SPEED_INTERVAL = 0.18;
 
 export const SHIP_ROWS = 4;
 export const SHIP_COLS = 8;

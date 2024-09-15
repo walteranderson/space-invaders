@@ -3,6 +3,7 @@ import { events } from "./events";
 import { GameEntity } from "./game-entity";
 import { KeyListener } from "./key-listener";
 import { Player } from "./player";
+import { Ship } from "./ship";
 
 export class Game {
   private ctx: CanvasRenderingContext2D;
@@ -14,7 +15,7 @@ export class Game {
     this.ctx = this.initCtx();
     this.initEvents();
     this.keyListener = new KeyListener();
-    this.entities = [new Player()];
+    this.entities = [new Player(), new Ship({ x: 10, y: 10, direction: 1 })];
   }
 
   start() {
