@@ -47,7 +47,7 @@ export class Player implements GameEntity {
 
   checkCollision(bullets: Bullet[]) {
     if (checkCollision(this, bullets)) {
-      console.error("GAME OVER");
+      events.emit("game_over");
     }
   }
 

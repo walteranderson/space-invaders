@@ -1,6 +1,7 @@
 import { Bullet } from "./bullet";
 import { checkCollision } from "./check-collision";
-import { CANVAS_WIDTH } from "./constants";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
+import { events } from "./events";
 import { GameEntity, GameEntityUpdateParams } from "./game-entity";
 import { Ship } from "./ship";
 
@@ -8,7 +9,7 @@ const SHIP_ROWS = 4;
 const SHIP_COLS = 8;
 const SHIP_X_SPACING = 80;
 const SHIP_Y_SPACING = 55;
-const SHIP_SPEED_INCREASE = 0.05;
+const SHIP_SPEED_INCREASE = 0.15;
 
 export class ShipGrid implements GameEntity {
   readonly type = "SHIP_GRID";
@@ -30,7 +31,17 @@ export class ShipGrid implements GameEntity {
 
   update(params: GameEntityUpdateParams): void {
     this.advance();
+
+    if (this.ships.flat().length === 0) {
+      events.emit("win");
+      return;
+    }
+
     this.each((s) => {
+      if (s.y + s.height >= CANVAS_HEIGHT) {
+        events.emit("win");
+        return;
+      }
       s.direction = this.direction;
       s.speed = this.speed;
       s.width = this.width;
@@ -92,13 +103,12 @@ export class ShipGrid implements GameEntity {
       return false;
     }
 
-    let advancing = false;
     if (first.x <= 0 || last.x + this.width >= CANVAS_WIDTH) {
-      advancing = true;
       this.direction = this.direction > 0 ? -1 : 1;
       this.speed = this.speed + SHIP_SPEED_INCREASE;
+      this.each((s) => {
+        s.y = s.y + SHIP_Y_SPACING;
+      });
     }
-
-    return advancing;
   }
 }

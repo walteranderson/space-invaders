@@ -1,8 +1,17 @@
 import "./index.css";
 import { Game } from "./game";
 
+let game = new Game();
 window.addEventListener("load", () => {
-  const game = new Game();
   game.start();
-  console.log('game start');
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "r") {
+    if (game.isRunning()) {
+      game.stop();
+    } else {
+      game.start();
+    }
+  }
 });
