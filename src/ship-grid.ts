@@ -1,3 +1,5 @@
+import { Bullet } from "./bullet";
+import { checkCollision } from "./check-collision";
 import { CANVAS_WIDTH } from "./constants";
 import { GameEntity, GameEntityUpdateParams } from "./game-entity";
 import { Ship } from "./ship";
@@ -9,15 +11,20 @@ const SHIP_Y_SPACING = 55;
 const SHIP_SPEED_INCREASE = 0.05;
 
 export class ShipGrid implements GameEntity {
+  readonly type = "SHIP_GRID";
   direction: 1 | -1;
   speed: number;
-  size: number;
+  width: number;
+  height: number;
   ships: Ship[][];
+  x = -1;
+  y = -1;
 
   constructor() {
     this.direction = 1;
-    this.speed = 1;
-    this.size = 30;
+    this.speed = 0.25;
+    this.width = 30;
+    this.height = 30;
     this.initShips();
   }
 
@@ -26,7 +33,8 @@ export class ShipGrid implements GameEntity {
     this.each((s) => {
       s.direction = this.direction;
       s.speed = this.speed;
-      s.size = this.size;
+      s.width = this.width;
+      s.height = this.height;
       s.update(params);
     });
   }
@@ -35,12 +43,19 @@ export class ShipGrid implements GameEntity {
     this.each((s) => s.draw(ctx));
   }
 
-  private each(cb: (ship: Ship) => void) {
-    for (let x = 0; x <= this.ships.length - 1; x++) {
-      for (let y = 0; y <= this.ships[x].length - 1; y++) {
-        cb(this.ships[x][y]);
+  checkCollision(b: Bullet[]) {
+    outer: for (let row = 0; row < this.ships.length; row++) {
+      for (let col = 0; col < this.ships[row].length; col++) {
+        if (checkCollision(this.ships[row][col], b)) {
+          this.ships[row].splice(col, 1);
+          break outer;
+        }
       }
     }
+  }
+
+  private each(cb: (ship: Ship) => void) {
+    this.ships.forEach((row) => row.forEach((s) => cb(s)));
   }
 
   private initShips() {
@@ -53,7 +68,8 @@ export class ShipGrid implements GameEntity {
           y: SHIP_Y_SPACING * (row + 1),
           direction: this.direction,
           speed: this.speed,
-          size: this.size,
+          width: this.width,
+          height: this.height,
         });
       }
     }
@@ -64,10 +80,10 @@ export class ShipGrid implements GameEntity {
     let last: Ship | undefined;
     for (let x = 0; x <= this.ships.length - 1; x++) {
       const row = this.ships[x];
-      if (!first || row[0].x < first.x) {
+      if (!first || (row[0] && row[0].x < first.x)) {
         first = row[0];
       }
-      if (!last || row[row.length - 1].x > last.x) {
+      if (!last || (row[row.length - 1] && row[row.length - 1].x > last.x)) {
         last = row[row.length - 1];
       }
     }
@@ -77,7 +93,7 @@ export class ShipGrid implements GameEntity {
     }
 
     let advancing = false;
-    if (first.x <= 0 || last.x + this.size >= CANVAS_WIDTH) {
+    if (first.x <= 0 || last.x + this.width >= CANVAS_WIDTH) {
       advancing = true;
       this.direction = this.direction > 0 ? -1 : 1;
       this.speed = this.speed + SHIP_SPEED_INCREASE;

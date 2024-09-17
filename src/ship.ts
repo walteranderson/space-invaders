@@ -3,11 +3,13 @@ import { events } from "./events";
 import { GameEntity, GameEntityUpdateParams } from "./game-entity";
 
 export class Ship implements GameEntity {
-  public x: number;
-  public y: number;
-  public size: number;
-  public speed: number;
-  public direction: 1 | -1;
+  readonly type = "SHIP";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  speed: number;
+  direction: 1 | -1;
   private shotCounter = 0;
 
   constructor(params: {
@@ -15,13 +17,15 @@ export class Ship implements GameEntity {
     y: number;
     direction: 1 | -1;
     speed: number;
-    size: number;
+    width: number;
+    height: number;
   }) {
     this.x = params.x;
     this.y = params.y;
     this.direction = params.direction;
     this.speed = params.speed;
-    this.size = params.size;
+    this.width = params.width;
+    this.height = params.height;
   }
 
   update({ diff }: GameEntityUpdateParams): void {
@@ -32,7 +36,7 @@ export class Ship implements GameEntity {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillRect(this.x, this.y, this.size, this.size);
+    ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 
   private shouldShoot(diff: number) {
@@ -49,9 +53,10 @@ export class Ship implements GameEntity {
     events.emit(
       "add_entity",
       new Bullet({
-        x: this.x + this.size / 2,
-        y: this.y + this.size / 2,
+        x: this.x + this.width / 2,
+        y: this.y + this.height / 2,
         direction: 1,
+        origin: this.type,
       }),
     );
   }

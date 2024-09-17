@@ -6,6 +6,11 @@ export type GameEntityUpdateParams = {
 };
 
 export interface GameEntity {
+  readonly type: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
   update(params: GameEntityUpdateParams): void;
   draw(ctx: CanvasRenderingContext2D): void;
 }

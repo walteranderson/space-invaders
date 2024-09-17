@@ -1,3 +1,5 @@
+import { Bullet } from "./bullet";
+import { checkCollision } from "./check-collision";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
 import { events } from "./events";
 import { GameEntity } from "./game-entity";
@@ -24,6 +26,8 @@ export class Game {
   }
 
   update(diff: number) {
+    this.checkCollisions();
+
     let i = this.entities.length;
     while (i--) {
       this.entities[i].update({
@@ -71,5 +75,38 @@ export class Game {
     events.subscribe("remove_entity", (e: GameEntity) => {
       this.entities.splice(this.entities.indexOf(e), 1);
     });
+  }
+
+  private checkCollisions() {
+    const [bullets, rest] = this.separate();
+    if (!bullets.length) {
+      return;
+    }
+
+    for (let i = 0; i < rest.length; i++) {
+      switch (rest[i].type) {
+        case "SHIP_GRID":
+          (rest[i] as ShipGrid).checkCollision(bullets);
+          break;
+        case "PLAYER":
+          (rest[i] as Player).checkCollision(bullets);
+          break;
+      }
+    }
+  }
+
+  private separate(): [Bullet[], GameEntity[]] {
+    let bullets: Bullet[] = [];
+    let rest: GameEntity[] = [];
+    let i = this.entities.length;
+    while (i--) {
+      const e = this.entities[i];
+      if (e.type === "BULLET") {
+        bullets.push(e as Bullet);
+      } else if (e.type === "PLAYER" || e.type === "SHIP_GRID") {
+        rest.push(e);
+      }
+    }
+    return [bullets, rest];
   }
 }

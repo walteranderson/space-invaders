@@ -2,18 +2,22 @@ import { Bullet } from "./bullet";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
 import { GameEntity, GameEntityUpdateParams } from "./game-entity";
 import { events } from "./events";
+import { checkCollision } from "./check-collision";
 
 export class Player implements GameEntity {
+  readonly type = "PLAYER";
   x: number;
   y: number;
-  size: number;
+  width: number;
+  height: number;
   speed: number;
   shooting: boolean;
 
   constructor() {
     this.x = 10;
     this.y = CANVAS_HEIGHT - 40;
-    this.size = 20;
+    this.width = 20;
+    this.height = 20;
     this.speed = 3;
     this.shooting = false;
   }
@@ -38,14 +42,20 @@ export class Player implements GameEntity {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillRect(this.x, this.y, this.size, this.size);
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+  }
+
+  checkCollision(bullets: Bullet[]) {
+    if (checkCollision(this, bullets)) {
+      console.error("GAME OVER");
+    }
   }
 
   private moveRight() {
-    if (this.x + this.size < CANVAS_WIDTH) {
+    if (this.x + this.width < CANVAS_WIDTH) {
       this.x += this.speed;
-      if (this.x + this.size > CANVAS_WIDTH) {
-        this.x = CANVAS_WIDTH - this.size;
+      if (this.x + this.width > CANVAS_WIDTH) {
+        this.x = CANVAS_WIDTH - this.width;
       }
     }
   }
@@ -61,9 +71,10 @@ export class Player implements GameEntity {
     events.emit(
       "add_entity",
       new Bullet({
-        x: this.x + this.size / 3.25,
-        y: this.y - this.size / 2.5,
+        x: this.x + this.width / 3.25,
+        y: this.y - (this.height * 2) / 2.5,
         direction: -1,
+        origin: this.type,
       }),
     );
   }

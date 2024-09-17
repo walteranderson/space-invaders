@@ -3,20 +3,30 @@ import { events } from "./events";
 import { GameEntity, GameEntityUpdateParams } from "./game-entity";
 
 export class Bullet implements GameEntity {
+  readonly type = "BULLET";
   x: number;
   y: number;
-  size: number;
+  width: number;
+  height: number;
   direction: 1 | -1;
+  origin: string;
   private speed: number;
   private limit: number;
 
-  constructor(params: { x: number; y: number; direction: 1 | -1 }) {
+  constructor(params: {
+    x: number;
+    y: number;
+    direction: 1 | -1;
+    origin: string;
+  }) {
     this.x = params.x;
     this.y = params.y;
-    this.size = 8;
+    this.width = 8;
+    this.height = 8;
     this.speed = 5;
     this.direction = params.direction;
     this.limit = params.direction < 0 ? 0 : CANVAS_HEIGHT;
+    this.origin = params.origin;
   }
 
   update(_: GameEntityUpdateParams): void {
@@ -28,7 +38,7 @@ export class Bullet implements GameEntity {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    ctx.fillRect(this.x, this.y, this.size, this.size);
+    ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 
   atLimit() {
