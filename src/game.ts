@@ -1,5 +1,4 @@
 import { Bullet } from "./bullet";
-import { checkCollision } from "./check-collision";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants";
 import { events } from "./events";
 import { GameEntity } from "./game-entity";
